@@ -57,10 +57,13 @@ USER_TYPE_CHOICES = (
     ('teacher', 'teacher')
 )
 
+def upload(instance, filename):
+    return 'avatars/{filename}'.format(filename=filename)
+
 class User(AbstractBaseUser):
     name = models.CharField(max_length=50, blank=True)
     email = models.EmailField(max_length=255, unique=True)
-    avatar = models.ImageField(default="avatar.png", upload_to="avatars/")
+    avatar = models.ImageField(default="avatar.png", upload_to=upload)
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
