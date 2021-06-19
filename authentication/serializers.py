@@ -24,8 +24,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         name = attrs.get('name', '')
         user_type = attrs.get('user_type', '')
 
-        if not name.isalpha():
-            raise serializers.ValidationError('The name must contail only alphabets.')
+        name = name.strip()
+        if not (len(name) > 2  and len(name) < 20) or not all(x.isalpha() or x.isspace() for x in name):
+            raise serializers.ValidationError('Name is not valid')
         return attrs
 
     def create(self, validated_data):
