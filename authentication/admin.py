@@ -1,4 +1,6 @@
 from django.contrib import admin
+from rest_framework_simplejwt.token_blacklist import models
+from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin
 from django.contrib.auth import get_user_model
 from .models import Student, Teacher
 # Register your models here.
@@ -78,9 +80,13 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('email',)
     filter_horizontal = ()
 
+class NewOutstandingTokenAdmin(OutstandingTokenAdmin):
 
+    def has_delete_permission(self, *args, **kwargs):
+        return True
 
-
+admin.site.unregister(models.OutstandingToken)
+admin.site.register(models.OutstandingToken, NewOutstandingTokenAdmin)
 
 admin.site.register(User, UserAdmin)
 admin.site.unregister(Group)
