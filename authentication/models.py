@@ -42,6 +42,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(
             name,
             email,
+            user_type = 'student',
             password=password,
             staff=True,
             admin = True
