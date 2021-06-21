@@ -131,8 +131,7 @@ class ChangePasswordSerializer(serializers.Serializer):
 class ResetPasswordEmailRequestSerializer(serializers.Serializer):
     email = serializers.EmailField(min_length=2)
 
-    class Meta:
-        fields = ['email']
+    
 
 #--------------------------------------------------------------------------------------------------------
 
@@ -144,8 +143,7 @@ class SetNewPasswordSerializer(serializers.Serializer):
     uidb64 = serializers.CharField(
         min_length=1, write_only=True)
 
-    class Meta:
-        fields = ['password', 'token', 'uidb64']
+    
 
     def validate(self, attrs):
         try:
