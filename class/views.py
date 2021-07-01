@@ -3,6 +3,7 @@ from rest_framework import generics, status, views, permissions
 from rest_framework.response import Response
 from .permissions import IsTeacher, IsStudent
 from .models import Classes, Study
+from authentication.models import *
 from .serializers import (
     HandleClassSerializer,
     ClassMemberSerializer
@@ -78,3 +79,39 @@ class ClassMembershipView(generics.GenericAPIView):
         except ObjectDoesNotExist:
             return Response({'response':'Invalid request data'})
         return Response({'response':'Student left the class'})
+
+
+
+class AddRemoveStudentView(generics.GenericAPIView):
+    serializer_class = ClassMemberSerializer
+
+    permission_classes = (permissions.IsAuthenticated, IsTeacher)
+
+    def post(self, request):
+
+        class_id = request.data.get('class_id')
+        email = request.data.get('email')
+        stu = Student.objects.filter(email = email)
+        
+        if not stu:
+            return Response({'response':'Invalid student email'})
+            
+        student_id = stu[0].pk
+
+        serializer = self.serializer_class(data={'class_id': class_id, 'student_id': student_id})
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+
+        join_data = serializer.data
+        return Response(join_data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request):
+        class_id = request.data.get('class_id')
+        student_id = request.data.get('student_id')
+        try:
+            s = Study.objects.get(class_id = class_id, student_id = student_id)
+            s.delete()
+        except ObjectDoesNotExist:
+            return Response({'response':'Invalid request data'})
+        return Response({'response':'Student removed'})
