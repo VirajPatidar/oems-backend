@@ -6,7 +6,9 @@ from .models import Classes, Study
 from authentication.models import *
 from .serializers import (
     HandleClassSerializer,
-    ClassMemberSerializer
+    ClassMemberSerializer,
+    StudentListSerializer,
+    TeacherSerializer
 )
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import date
@@ -115,3 +117,29 @@ class AddRemoveStudentView(generics.GenericAPIView):
         except ObjectDoesNotExist:
             return Response({'response':'Invalid request data'})
         return Response({'response':'Student removed'})
+
+
+
+class ClassMembersListView(generics.GenericAPIView):
+    
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        class_id = request.data.get('class_id')
+
+        try:
+            teach_id = Classes.objects.values('teacher_id',).get(pk = class_id)
+        except ObjectDoesNotExist:
+            return Response({'response':'Invalid request data'})
+            
+        # print(teach_id.get('teacher_id')) 
+        teach = Teacher.objects.filter(pk = teach_id.get('teacher_id'))
+        teacher_serializer = TeacherSerializer(instance=teach, many=True)
+
+        stu_ids = Study.objects.values_list('student_id', flat=True).filter(class_id = class_id)
+        stu_ids = list(stu_ids)
+        # print(stu_ids) 
+        stu = Student.objects.filter(id__in = stu_ids)
+        student_serializer = StudentListSerializer(instance=stu, many=True)
+
+        return Response({'teacher' : teacher_serializer.data, 'students': student_serializer.data})
