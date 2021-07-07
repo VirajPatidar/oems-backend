@@ -23,6 +23,13 @@ class HandleMessageView(generics.GenericAPIView):
         class_data = serializer.data
         return Response(class_data, status=status.HTTP_201_CREATED)
 
+
+
+class GetMessageView(generics.GenericAPIView):
+    serializer_class = ChatMessageSerializer
+
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get(self, request, class_id):
 
         messages = Chat.objects.filter(class_id = class_id).order_by('timestamp')

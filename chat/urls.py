@@ -1,8 +1,9 @@
 from django.urls import path
 from .views import (
-    HandleMessageView
+    HandleMessageView,
+    GetMessageView
 )
 urlpatterns = [
-    path('message/<class_id>', HandleMessageView.as_view(), name="getchatmessages"),
     path('message/', HandleMessageView.as_view(), name="chatmessage"),
+    path('message/<class_id>', GetMessageView.as_view(), name="getchatmessages"),
 ]

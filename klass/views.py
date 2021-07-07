@@ -124,8 +124,7 @@ class ClassMembersListView(generics.GenericAPIView):
     
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get(self, request):
-        class_id = request.data.get('class_id')
+    def get(self, request, class_id):
 
         try:
             teach_id = Classes.objects.values('teacher_id',).get(pk = class_id)
