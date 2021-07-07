@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework',
     'authentication',
-    'class',
+    'klass',
+    'chat',
 ]
 
 MIDDLEWARE = [
