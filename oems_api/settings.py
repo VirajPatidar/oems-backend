@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'authentication',
     'klass',
     'chat',
+    'quiz',
 ]
 
 MIDDLEWARE = [

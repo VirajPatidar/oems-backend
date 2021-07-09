@@ -42,6 +42,7 @@ urlpatterns = [
     path('auth/', include('authentication.urls')),
     path('class/', include('klass.urls')),
     path('chat/', include('chat.urls')),
+    path('quiz/', include('quiz.urls')),
 
 
 
