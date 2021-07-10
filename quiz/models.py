@@ -24,7 +24,7 @@ class Quiz(models.Model):
         return f"{self.class_id}_____{self.name}"
 
 
-class Status(models.Model):
+class SubmissionStatus(models.Model):
     class_id = models.ForeignKey(Classes, on_delete=models.CASCADE, related_name='status_class_id')
     student_id = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='status_student_id')
     quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='status_quiz_id')
@@ -49,7 +49,7 @@ class Question(models.Model):
         return f"{self.quiz_id}_____{self.question}"
 
 
-class Response(models.Model):
+class QuizResponse(models.Model):
     quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='response_quiz_id')
     student_id = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='response_student_id')
     question = models.CharField(max_length=250, blank=True)
