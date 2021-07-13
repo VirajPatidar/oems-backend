@@ -19,6 +19,7 @@ from decouple import config
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.conf import settings
+from django.db.models import F
 
 #Imports from other files
 from .models import User, Student, Teacher
@@ -33,6 +34,8 @@ from .serializers import (
     SetNewPasswordSerializer,
     UpdateAvatarSerializer
 )
+
+from klass.models import Study, Classes
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class RegisterView(generics.GenericAPIView):
@@ -99,14 +102,32 @@ class LoginAPIView(generics.GenericAPIView):
             student_name = user.name
             user_type = user.user_type
             student_id = stu.pk
-            return Response({'user_data': user_data, 'user id':user_id, 'student email':student_email, 'student name':student_name, 'user_type':user_type, 'student id': student_id, 'profile picture': profile_picture}, status=status.HTTP_200_OK)
+            class_details = Study.objects.select_related('class_id').values('class_id', 'student_id', class_name=F('class_id__name')).filter(student_id=student_id)
+            class_response=[]
+            for i in class_details:
+                class_obj=Classes.objects.get(pk=i['class_id'])
+                dict1={
+                    'class_id': i['class_id'],
+                    'class_name': i['class_name'],
+                    'teacher_name':class_obj.teacher_id.user.name
+                }
+                class_response.append(dict1)
+            return Response({'user_data': user_data, 'class_details': class_response, 'user id':user_id, 'student email':student_email, 'student name':student_name, 'user_type':user_type, 'student id': student_id, 'profile picture': profile_picture}, status=status.HTTP_200_OK)
         else:
             tea = Teacher.objects.get(email=user.email)
             teacher_email = email
             teacher_name = user.name
             user_type = user.user_type
             teacher_id = tea.pk
-            return Response({'user_data': user_data, 'user id':user_id, 'teacher email':teacher_email, 'teacher name':teacher_name, 'user_type':user_type, 'teacher id': teacher_id, 'profile picture': profile_picture}, status=status.HTTP_200_OK)
+            class_details = Classes.objects.filter(teacher_id=teacher_id)
+            class_response=[]
+            for i in class_details:
+                dict1={
+                    'class_id': i.pk,
+                    'class_name': i.name,
+                }
+                class_response.append(dict1)
+            return Response({'user_data': user_data, 'class_details': class_response, 'user id':user_id, 'teacher email':teacher_email, 'teacher name':teacher_name, 'user_type':user_type, 'teacher id': teacher_id, 'profile picture': profile_picture}, status=status.HTTP_200_OK)
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
