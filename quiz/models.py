@@ -14,11 +14,13 @@ class Quiz(models.Model):
     start_time = models.DateTimeField()    
     end_time = models.DateTimeField()
 
-    def isActive(self):
-        if (self.start_time < datetime.now()) and (datetime.now() < self.end_time):
-            return True
-        else:
-            return False    
+    def quiz_status(self):
+        if (datetime.now(self.start_time.tzinfo) < self.start_time):
+            return "Due on: "+str(self.start_time)
+        elif (self.start_time < datetime.now(self.start_time.tzinfo)) and (datetime.now(self.end_time.tzinfo) < self.end_time):
+            return "Active"
+        elif (self.end_time < datetime.now(self.end_time.tzinfo)):
+            return "Overdue"    
 
     def __str__(self):
         return f"{self.class_id}_____{self.name}"
@@ -27,7 +29,7 @@ class Quiz(models.Model):
 class SubmissionStatus(models.Model):
     class_id = models.ForeignKey(Classes, on_delete=models.CASCADE, related_name='status_class_id')
     student_id = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='status_student_id')
-    quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='status_quiz_id')
+    quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='quiz_submission_status')
     submission_status = models.BooleanField(default=False)
     marks_scored = models.IntegerField(default=0)
 
@@ -36,7 +38,7 @@ class SubmissionStatus(models.Model):
 
 
 class Question(models.Model):
-    quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='question_quiz_id')
+    quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
     question = models.CharField(max_length=250, blank=True)
     marks = models.IntegerField()
     option1 = models.CharField(max_length=100, blank=True)

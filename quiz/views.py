@@ -6,9 +6,13 @@ from .models import *
 from klass.models import Classes, Study
 from authentication.models import *
 from .serializers import (
-    QuizSerializer
+    QuizSerializer,
+    QuestionSerializer,
+    GetQuizSerializer
+    # QuizwithStatusSerializer
 )
 from django.core.exceptions import ObjectDoesNotExist
+import logging
 
 # Create your views here.
 
@@ -37,3 +41,70 @@ class MakeQuizView(generics.GenericAPIView):
             SubmissionStatus.objects.create(class_id=c, student_id=i, quiz_id=q)
 
         return Response(quiz_data, status=status.HTTP_201_CREATED)
+
+
+class CreateQuestionView(generics.GenericAPIView):
+    serializer_class = QuestionSerializer
+
+    permission_classes = (permissions.IsAuthenticated, IsTeacher)
+
+    def post(self, request):
+
+        serializer = self.serializer_class(data=request.data)
+        
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+
+        question_data = serializer.data
+
+        return Response(question_data, status=status.HTTP_201_CREATED)
+
+
+class GetTeachQuizView(generics.GenericAPIView):
+    serializer_class = GetQuizSerializer
+
+    permission_classes = (permissions.IsAuthenticated, IsTeacher)
+
+    def get(self, request, class_id):
+
+        quizzes = Quiz.objects.filter(class_id = class_id).order_by('start_time')
+        print(len(quizzes))
+        if len(quizzes) == 0 :
+            return Response({'response':'Invalid class ID'})
+
+        serializer = GetQuizSerializer(instance=quizzes, many=True)
+        return Response(serializer.data)
+
+class GetStuQuizView(generics.GenericAPIView):
+    serializer_class = GetQuizSerializer
+
+    permission_classes = (permissions.IsAuthenticated, IsStudent)
+
+    def get(self, request, class_id, student_id):
+
+        quiz_ids = SubmissionStatus.objects.values_list('quiz_id', flat=True).filter(class_id = class_id, student_id=student_id)
+
+        pending_quiz_ids = list(quiz_ids.filter(submission_status = False))
+        pending_quizzes = Quiz.objects.filter(id__in = pending_quiz_ids).order_by('start_time')
+        pending_serializer = GetQuizSerializer(instance=pending_quizzes, many=True)
+        
+        submitted_quiz_ids = list(quiz_ids.filter(submission_status = True))
+        submitted_quizzes = Quiz.objects.filter(id__in = submitted_quiz_ids).order_by('start_time')
+        submitted_serializer = GetQuizSerializer(instance=submitted_quizzes, many=True)
+
+        return Response({'pending' : pending_serializer.data, 'submitted': submitted_serializer.data})
+
+# class GetStatusQuizView(generics.GenericAPIView):
+#     serializer_class = QuizwithStatusSerializer
+
+#     permission_classes = (permissions.IsAuthenticated, IsStudent)
+
+#     def get(self, request, class_id, student_id):
+
+#         quizzes = Quiz.objects.filter(class_id = class_id).order_by('start_time')
+#         print(len(quizzes))
+#         if len(quizzes) == 0 :
+#             return Response({'response':'Invalid class ID'})
+
+#         serializer = QuizwithStatusSerializer(instance=quizzes, many=True)
+#         return Response(serializer.data)
