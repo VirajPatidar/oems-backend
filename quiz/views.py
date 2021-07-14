@@ -9,7 +9,8 @@ from .serializers import (
     QuizSerializer,
     QuestionSerializer,
     GetQuizSerializer,
-    QuizQuestionSerializer
+    QuizQuestionSerializer,
+    TeachQuizQuestionSerializer
 )
 from django.core.exceptions import ObjectDoesNotExist
 import logging
@@ -95,8 +96,18 @@ class GetStuQuizView(generics.GenericAPIView):
         return Response({'pending' : pending_serializer.data, 'submitted': submitted_serializer.data})
 
 
+class GetTeachQuestionView(generics.GenericAPIView):
+
+    permission_classes = (permissions.IsAuthenticated, IsTeacher)
+
+    def get(self, request, quiz_id):
+
+        quiz = Quiz.objects.get(pk = quiz_id)
+
+        quiz = TeachQuizQuestionSerializer(instance=quiz)
+        return Response(quiz.data)
+
 class GetStuQuestionView(generics.GenericAPIView):
-    serializer_class = GetQuizSerializer
 
     permission_classes = (permissions.IsAuthenticated, IsStudent)
 
