@@ -24,14 +24,16 @@ class GetQuizSerializer(serializers.ModelSerializer):
     def get_quiz_status(self, obj):
         return obj.quiz_status()
 
-# class StatusSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = SubmissionStatus
-#         fields = '__all__'
+class QuestSerializer(serializers.ModelSerializer):
 
-# class QuizwithStatusSerializer(serializers.ModelSerializer):
-#     quiz_submission_status = StatusSerializer(many=True, read_only=True)
+    class Meta:
+        model = Question
+        exclude = ['correct_option_number', 'quiz_id']
 
-#     class Meta:
-#         model = Quiz
-#         fields = ['id', 'name', 'class_id', 'number_of_questions', 'marks', 'response_released', 'quiz_status', 'start_time', 'end_time', 'quiz_submission_status']
+class QuizQuestionSerializer(serializers.ModelSerializer):
+
+    questions = QuestSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Quiz
+        fields = ['id', 'name', 'class_id', 'number_of_questions', 'marks', 'response_released', 'quiz_status', 'start_time', 'end_time', 'questions']

@@ -3,7 +3,8 @@ from .views import (
     MakeQuizView,
     CreateQuestionView,
     GetTeachQuizView,
-    GetStuQuizView
+    GetStuQuizView,
+    GetStuQuestionView
 )
 
 urlpatterns = [
@@ -11,5 +12,5 @@ urlpatterns = [
     path('make-question/', CreateQuestionView.as_view(), name="make-question"),
     path('quiz/<class_id>', GetTeachQuizView.as_view(), name="teach-quiz"),
     path('quiz/<class_id>/<student_id>', GetStuQuizView.as_view(), name="stu-quiz"),
-    #path('questions/', GetQuestionView.as_view(), name="questions"),
+    path('question/<quiz_id>/<student_id>', GetStuQuestionView.as_view(), name="stu-question"),
 ]

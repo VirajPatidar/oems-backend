@@ -8,8 +8,8 @@ from authentication.models import *
 from .serializers import (
     QuizSerializer,
     QuestionSerializer,
-    GetQuizSerializer
-    # QuizwithStatusSerializer
+    GetQuizSerializer,
+    QuizQuestionSerializer
 )
 from django.core.exceptions import ObjectDoesNotExist
 import logging
@@ -94,17 +94,39 @@ class GetStuQuizView(generics.GenericAPIView):
 
         return Response({'pending' : pending_serializer.data, 'submitted': submitted_serializer.data})
 
-# class GetStatusQuizView(generics.GenericAPIView):
-#     serializer_class = QuizwithStatusSerializer
 
-#     permission_classes = (permissions.IsAuthenticated, IsStudent)
+class GetStuQuestionView(generics.GenericAPIView):
+    serializer_class = GetQuizSerializer
 
-#     def get(self, request, class_id, student_id):
+    permission_classes = (permissions.IsAuthenticated, IsStudent)
 
-#         quizzes = Quiz.objects.filter(class_id = class_id).order_by('start_time')
-#         print(len(quizzes))
-#         if len(quizzes) == 0 :
-#             return Response({'response':'Invalid class ID'})
+    def get(self, request, quiz_id, student_id):
 
-#         serializer = QuizwithStatusSerializer(instance=quizzes, many=True)
-#         return Response(serializer.data)
+        quiz = Quiz.objects.get(pk = quiz_id)
+
+        quiz_status = quiz.quiz_status()
+        print(quiz_status)
+
+        response_released = quiz.response_released
+        print(response_released)
+
+        submission_status = SubmissionStatus.objects.values('submission_status').filter(quiz_id = quiz_id, student_id=student_id)[0]['submission_status']
+        print(submission_status)
+
+        if submission_status :
+            if response_released :
+                pass
+
+            else :
+                return Response({'response':'Result has not been released yet. Please contact your teacher'})
+
+        else :
+            if quiz_status == "Active" :
+                quiz = QuizQuestionSerializer(instance=quiz)
+                return Response(quiz.data)
+
+            elif quiz_status == "Overdue" :
+                return Response({'response':'This quiz is no longer accepting responses. Please contact your teacher'})
+
+            else :
+                return Response({'response':'Quiz will start on ' + str(quiz.start_time)[0:10] +' '+ str(quiz.start_time)[11:16]})
