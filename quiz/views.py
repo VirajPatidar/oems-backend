@@ -127,7 +127,10 @@ class GetStuQuestionView(generics.GenericAPIView):
 
         if submission_status :
             if response_released :
-                pass
+                submit_status = SubmissionStatus.objects.get(quiz_id=quiz_id, student_id=student_id)
+                quiz_response = QuizResponse.objects.filter(quiz_id=quiz_id, student_id=student_id)
+                resp = QuizResponseSerializer(instance=quiz_response, many=True)
+                return Response({'name':quiz.name, 'number_of_questions':quiz.number_of_questions, 'marks_scored': submit_status.marks_scored, 'total_marks':quiz.marks, 'reponse': resp.data})
 
             else :
                 return Response({'response':'Result has not been released yet. Please contact your teacher'})
