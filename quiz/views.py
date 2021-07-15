@@ -10,7 +10,8 @@ from .serializers import (
     QuestionSerializer,
     GetQuizSerializer,
     QuizQuestionSerializer,
-    TeachQuizQuestionSerializer
+    TeachQuizQuestionSerializer,
+    QuizResponseSerializer
 )
 from django.core.exceptions import ObjectDoesNotExist
 import logging
@@ -141,3 +142,47 @@ class GetStuQuestionView(generics.GenericAPIView):
 
             else :
                 return Response({'response':'Quiz will start on ' + str(quiz.start_time)[0:10] +' '+ str(quiz.start_time)[11:16]})
+
+
+class SubmitQuizResponseView(generics.GenericAPIView):
+
+    permission_classes = (permissions.IsAuthenticated, IsStudent)
+
+    def post(self, request, quiz_id, student_id):
+
+        for i in request.data:
+            question = Question.objects.get(pk = i.get('question_id'))
+            serializer = QuizResponseSerializer(data={'quiz_id': quiz_id, 
+                                                'student_id': student_id, 
+                                                'question_id': i.get('question_id'), 
+                                                'question': question.question,
+                                                'marks': question.marks,
+                                                'marks_scored': question.marks if question.correct_option_number == i.get('marked_option_number') else 0,
+                                                'option1': question.option1,
+                                                'option2': question.option2,
+                                                'option3': question.option3,
+                                                'option4': question.option4,
+                                                'correct_option_number': question.correct_option_number,
+                                                'marked_option_number': i.get('marked_option_number')
+                                                })
+
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+
+            print(i)
+
+
+        quiz_response = QuizResponse.objects.filter(quiz_id=quiz_id, student_id=student_id)
+
+        total_marks = 0
+        for i in quiz_response:
+            total_marks = total_marks + i.marks_scored
+
+        submission_status = SubmissionStatus.objects.get(quiz_id=quiz_id, student_id=student_id)
+        submission_status.marks_scored = total_marks
+        submission_status.submission_status = True
+        submission_status.save()
+
+        resp = QuizResponseSerializer(instance=quiz_response, many=True)
+
+        return Response(resp.data)

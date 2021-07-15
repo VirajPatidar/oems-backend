@@ -45,3 +45,9 @@ class TeachQuizQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quiz
         fields = ['id', 'name', 'class_id', 'number_of_questions', 'marks', 'response_released', 'quiz_status', 'start_time', 'end_time', 'questions']
+
+class QuizResponseSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = QuizResponse
+        fields = '__all__'

@@ -54,8 +54,10 @@ class Question(models.Model):
 class QuizResponse(models.Model):
     quiz_id = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='response_quiz_id')
     student_id = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='response_student_id')
+    question_id = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='question_id')
     question = models.CharField(max_length=250, blank=True)
     marks = models.IntegerField()
+    marks_scored = models.IntegerField(default=0)
     option1 = models.CharField(max_length=100, blank=True)
     option2 = models.CharField(max_length=100, blank=True)
     option3 = models.CharField(max_length=100, blank=True)

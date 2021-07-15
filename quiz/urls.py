@@ -5,7 +5,8 @@ from .views import (
     GetTeachQuizView,
     GetStuQuizView,
     GetTeachQuestionView,
-    GetStuQuestionView
+    GetStuQuestionView,
+    SubmitQuizResponseView
 )
 
 urlpatterns = [
@@ -15,4 +16,5 @@ urlpatterns = [
     path('quiz/<class_id>/<student_id>', GetStuQuizView.as_view(), name="stu-quiz"),
     path('question/<quiz_id>', GetTeachQuestionView.as_view(), name="teach-question"),
     path('question/<quiz_id>/<student_id>', GetStuQuestionView.as_view(), name="stu-question"),
+    path('response/<quiz_id>/<student_id>', SubmitQuizResponseView.as_view(), name="quiz-response"),
 ]
