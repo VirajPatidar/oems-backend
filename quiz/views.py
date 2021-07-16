@@ -199,3 +199,21 @@ class SubmitQuizResponseView(generics.GenericAPIView):
         resp = QuizResponseSerializer(instance=quiz_response, many=True)
 
         return Response(resp.data)
+
+
+class ReleaseResponseView(generics.GenericAPIView):
+    serializer_class = QuestionSerializer
+
+    permission_classes = (permissions.IsAuthenticated, IsTeacher)
+
+    def post(self, request, quiz_id):
+
+        try:
+            quiz = Quiz.objects.get(pk = quiz_id)
+        except ObjectDoesNotExist:
+            return Response({'response':'Invalid quiz ID'})
+
+        quiz.response_released = True
+        quiz.save()
+
+        return Response({'response':'Result and response of '+quiz.name+ ' has been released'})
