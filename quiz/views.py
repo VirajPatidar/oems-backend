@@ -11,7 +11,8 @@ from .serializers import (
     GetQuizSerializer,
     QuizQuestionSerializer,
     TeachQuizQuestionSerializer,
-    QuizResponseSerializer
+    QuizResponseSerializer,
+    QuizStatisticsSerializer
 )
 from django.core.exceptions import ObjectDoesNotExist
 import logging
@@ -217,3 +218,26 @@ class ReleaseResponseView(generics.GenericAPIView):
         quiz.save()
 
         return Response({'response':'Result and response of '+quiz.name+ ' has been released'})
+
+
+
+class QuizStatisticsView(generics.GenericAPIView):
+    serializer_class = QuizStatisticsSerializer
+
+    permission_classes = (permissions.IsAuthenticated, IsTeacher)
+
+    def get(self, request, class_id, quiz_id):
+
+        try:
+            quiz = Quiz.objects.get(pk = quiz_id)
+        except ObjectDoesNotExist:
+            return Response({'response':'Invalid quiz ID'})
+
+        try:
+            klass = Classes.objects.get(pk = class_id)
+        except ObjectDoesNotExist:
+            return Response({'response':'Invalid quiz ID'})
+
+        resp = QuizStatisticsSerializer(instance=quiz)
+
+        return Response(resp.data)

@@ -7,7 +7,8 @@ from .views import (
     GetTeachQuestionView,
     GetStuQuestionView,
     SubmitQuizResponseView,
-    ReleaseResponseView
+    ReleaseResponseView,
+    QuizStatisticsView
 )
 
 urlpatterns = [
@@ -19,4 +20,5 @@ urlpatterns = [
     path('question/<int:quiz_id>/<int:student_id>', GetStuQuestionView.as_view(), name="stu-question"),
     path('response/<int:quiz_id>/<int:student_id>', SubmitQuizResponseView.as_view(), name="quiz-response"),
     path('result/<int:quiz_id>', ReleaseResponseView.as_view(), name="quiz-result"),
+    path('statistics/<int:class_id>/<int:quiz_id>', QuizStatisticsView.as_view(), name="quiz-statistics"),
 ]
