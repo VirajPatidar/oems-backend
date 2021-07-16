@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, status, views, permissions
 from rest_framework.response import Response
-from .permissions import IsTeacher, IsStudent
+from oems_api.permissions import IsTeacher, IsStudent
 from .models import Classes, Study
 from authentication.models import *
 from .serializers import (
