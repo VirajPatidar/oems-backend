@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'klass',
     'chat',
     'quiz',
+    'sharedfolder',
 ]
 
 MIDDLEWARE = [

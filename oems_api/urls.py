@@ -43,6 +43,8 @@ urlpatterns = [
     path('class/', include('klass.urls')),
     path('chat/', include('chat.urls')),
     path('quiz/', include('quiz.urls')),
+    path('sharedfolder/', include('sharedfolder.urls')),
+
 
 
 
