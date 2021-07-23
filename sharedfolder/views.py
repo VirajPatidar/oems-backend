@@ -3,6 +3,8 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status, permissions, generics
+import os
+from django.conf import settings
 # Create your views here.
 
 # Parsers help your views to parse the data submitted in a specific format. Basically they map the Content-Type header of the HTTP request to the code required to parse that type into a python structure that your Serializer can understand
@@ -66,3 +68,30 @@ class getSFFiles(generics.GenericAPIView):
         #     return Response({
         #         'message': 'shared folder is empty'
         #     }, status=status.HTTP_204_NO_CONTENT)
+
+
+class DeleteSFFileView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        fileid= request.data['id']
+        sf_obj = SharedFolder.objects.filter(pk=fileid)
+        if len(sf_obj)!=0:
+            if sf_obj[0].added_by != request.user:
+                return Response({
+                    'message': 'You can not delete this file'
+                }, status=status.HTTP_403_FORBIDDEN)
+            file_url=os.path.join(settings.BASE_DIR, sf_obj[0].filefield.url)
+            # print(file_url)
+            # print(sf_obj[0].filefield.url)
+            sf_obj[0].delete()
+            if os.path.exists(file_url):
+                print(True)
+                os.remove(file_url)
+            return Response({
+                'message': 'File deleted successfully'
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'message': 'Invalid Id'
+            }, status=status.HTTP_204_NO_CONTENT)
