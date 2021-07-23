@@ -37,45 +37,11 @@ class getSFFiles(generics.GenericAPIView):
         return Response(allFilesSerialised.data, status=status.HTTP_200_OK)
 
 
-
-
-
-
-
-
-
-
-        # isOwner = False
-        # class_obj = Classes.objects.get(id=class_id)
-        # allfiles = SharedFolder.objects.filter(class_id=class_obj).order_by('-timestamp')
-        # result=[]
-        # for allfile in allfiles:
-        #     if allfile.added_by==request.user:
-        #         isOwner = True
-        #     dict1={
-        #         'id': allfile.pk,
-        #         'title': allfile.title,
-        #         'filefield': allfile.filefield,
-        #         'timestamp': allfile.timestamp,
-        #         'isOwner':isOwner,
-        #     }
-        #     result.append(dict1)
-        # if len(result)!=0:
-        #     return Response({
-        #         'files':result,
-        #     }, status=status.HTTP_200_OK)
-        # else:
-        #     return Response({
-        #         'message': 'shared folder is empty'
-        #     }, status=status.HTTP_204_NO_CONTENT)
-
-
 class DeleteSFFileView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
-    def post(self, request):
-        fileid= request.data['id']
-        sf_obj = SharedFolder.objects.filter(pk=fileid)
+    def delete(self, request, file_id):
+        sf_obj = SharedFolder.objects.filter(pk=file_id)
         if len(sf_obj)!=0:
             if sf_obj[0].added_by != request.user:
                 return Response({
