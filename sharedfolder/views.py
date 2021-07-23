@@ -47,9 +47,8 @@ class DeleteSFFileView(generics.GenericAPIView):
                 return Response({
                     'message': 'You can not delete this file'
                 }, status=status.HTTP_403_FORBIDDEN)
-            file_url=os.path.join(settings.BASE_DIR, sf_obj[0].filefield.url)
-            # print(file_url)
-            # print(sf_obj[0].filefield.url)
+            file_url=os.path.join(settings.MEDIA_ROOT, sf_obj[0].filefield.name)
+            print(file_url)
             sf_obj[0].delete()
             if os.path.exists(file_url):
                 print(True)
