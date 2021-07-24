@@ -90,3 +90,19 @@ class GetStuAssignmentListView(generics.GenericAPIView):
             'Pending': pending_assign_serializer.data,
             'Submitted': submitted_assign_serializer.data
         }, status=status.HTTP_200_OK)
+
+class GetStudentAssignmentView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, IsStudent)
+    serializer_class = GetAssignmentSerializer
+
+    def get(self, request, assign_id):
+        try:
+            assign = Assignment.objects.get(id=assign_id)
+        except ObjectDoesNotExist:
+            return Response({
+                'message':'Invalid Assignment Id'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer = GetAssignmentSerializer(instance=assign)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
