@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'chat',
     'quiz',
     'sharedfolder',
+    'assignment',
 ]
 
 MIDDLEWARE = [
