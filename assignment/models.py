@@ -20,7 +20,7 @@ class Assignment(models.Model):
 
 
     def assignment_status(self):
-        if datetime.now() < self.due_on:
+        if datetime.now(self.due_on.tzinfo) < self.due_on:
             return "Due on:" + str(self.due_on)
         else:
             return "Overdue"
