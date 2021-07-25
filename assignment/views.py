@@ -91,7 +91,7 @@ class GetStuAssignmentListView(generics.GenericAPIView):
             'Submitted': submitted_assign_serializer.data
         }, status=status.HTTP_200_OK)
 
-class GetStudentAssignmentView(generics.GenericAPIView):
+class GetStudentPendingAssignmentView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, IsStudent)
     serializer_class = GetAssignmentSerializer
 
@@ -106,3 +106,46 @@ class GetStudentAssignmentView(generics.GenericAPIView):
         serializer = GetAssignmentSerializer(instance=assign)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class SubmitAssignmentResponseView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, IsStudent)
+
+    def post(self, request, assign_id, student_id):
+        serializer = SubmitAssignmentSerializer(data={
+            'assignment_id':assign_id,
+            'student_id': student_id,
+            'submission_file': request.data['submission_file']
+        })
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        submission_status = SubmissionStatus.objects.get(assignment_id=assign_id, student_id=student_id)
+        submission_status.submission_status = True
+        submission_status.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class GetStudentSubmitedAssignmentView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, IsStudent)
+
+    def get(self, request, assign_id, student_id):
+        try:
+            assign = Assignment.objects.get(id=assign_id)
+        except ObjectDoesNotExist:
+            return Response({
+                'message':'Invalid Assignment Id'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer = GetAssignmentSerializer(instance=assign)
+
+        assignment_response = Assignment_Response.objects.get(assignment_id=assign_id, student_id=student_id)
+        response_serializer = GetAssignmentResponseSerializer(instance=assignment_response)
+
+        return Response({
+            "Assignment_Details":serializer.data,
+            "Response_Details":response_serializer.data
+            }, status=status.HTTP_200_OK)
+
+# class GetTeacherAssignmentResponseList(generics.GenericAPIView):
+#     permission_classes = (permissions.IsAuthenticated, IsTeacher)
+
+#     def get(self, request, assign_id):
+#         response_objs = SubmissionStatus.objects.filter(assignment_id=assign_id)
