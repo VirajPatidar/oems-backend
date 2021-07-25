@@ -44,6 +44,7 @@ class Assignment_Response(models.Model):
     student_id = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='assign_response_student_id')
     submission_file = models.FileField(blank=False, null=False, upload_to='submissions/')
     submited_data = models.DateTimeField(auto_now_add=True)
+    idGraded = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.assignment_id}-{self.student_id}"
