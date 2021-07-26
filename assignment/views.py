@@ -149,7 +149,7 @@ class GetTeacherAssignmentResponseList(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, IsTeacher)
 
     def get(self, request, assign_id):
-        submitted_response_objs = Assignment_Response.objects.filter(assignment_id=assign_id, idGraded=False)
+        submitted_response_objs = Assignment_Response.objects.filter(assignment_id=assign_id, isGraded=False)
 
         submitted_serializer = GetTeacherAssignmentResponseListSerializer(instance=submitted_response_objs, many=True)
 

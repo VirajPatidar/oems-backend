@@ -58,7 +58,7 @@ class GetAssignmentResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Assignment_Response
-        fields = ['submission_file', 'submited_data', 'submission_status','marks']
+        fields = ['submission_file', 'submited_date', 'submission_status','marks']
 
 
 class GetTeacherAssignmentResponseListSerializer(serializers.ModelSerializer):
@@ -69,7 +69,7 @@ class GetTeacherAssignmentResponseListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Assignment_Response
-        fields = ['id', 'student_id', 'name', 'submited_data']
+        fields = ['id', 'student_id', 'name', 'submited_date']
 
 class NotSubmittedResponseListSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField('get_student_name')
