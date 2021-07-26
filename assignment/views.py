@@ -162,4 +162,60 @@ class GetTeacherAssignmentResponseList(generics.GenericAPIView):
             'Not_Submitted_Responses':not_submitted_serializer.data
         }, status=status.HTTP_200_OK)
 
+class GetTeacherAssignmentResponse(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, IsTeacher)
 
+    def get(self, request, response_id):
+        submitted_response_obj = Assignment_Response.objects.get(id=response_id)
+        serializer = GetTeacherAssignmentResponseSerializer(instance=submitted_response_obj)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)        
+
+
+class GradeAssignmentView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, IsTeacher)
+    serializer_class = GradeAssignmentSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+
+        grade_data = serializer.data
+
+        response_id = request.data.get('response_id')
+
+        response_obj = Assignment_Response.objects.get(id=response_id)
+        print(response_obj)
+        response_obj.isGraded = True
+        response_obj.save()
+
+        stu_id = response_obj.student_id
+        assign_id = response_obj.assignment_id
+
+        sub_status_obj = SubmissionStatus.objects.get(student_id=stu_id, assignment_id=assign_id)
+        print(sub_status_obj)
+        sub_status_obj.marks_scored = request.data.get('marks_scored')
+        sub_status_obj.save()
+
+        return Response(grade_data, status=status.HTTP_201_CREATED)
+
+class GetTeacherGradedResponseList(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, IsTeacher)
+
+    def get(self, request, assign_id):
+        graded_response_objs = Assignment_Response.objects.filter(assignment_id=assign_id, isGraded=True)
+
+        serializer = GetTeacherGradedResponseListSerializer(instance=graded_response_objs, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class GetTeacherGradedResponse(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, IsTeacher)
+
+    def get(self, request, response_id):
+        response_obj = Assignment_Response.objects.get(id=response_id)
+
+        serializer = GetTeacherGradedResponseSerializer(instance=response_obj)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

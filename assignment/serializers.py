@@ -4,7 +4,7 @@ from datetime import datetime
 
 from .models import *
 from klass.models import Study
-from .models import SubmissionStatus
+from .models import SubmissionStatus, Grade_Assignment
 
 class AssignmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -39,7 +39,7 @@ class GetAssignmentResponseSerializer(serializers.ModelSerializer):
     marks = serializers.SerializerMethodField('get_marks')
 
     def get_marks(self, obj):
-        if obj.idGraded==True:
+        if obj.isGraded==True:
             assign_id = obj.assignment_id
             student_id = obj.student_id
             marks_obj = SubmissionStatus.objects.get(student_id=student_id, assignment_id=assign_id)
@@ -63,20 +63,93 @@ class GetAssignmentResponseSerializer(serializers.ModelSerializer):
 
 class GetTeacherAssignmentResponseListSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField('get_student_name')
+    email = serializers.SerializerMethodField('get_student_email')
 
     def get_student_name(self, obj):
         return obj.student_id.name
+    
+    def get_student_email(self, obj):
+        return obj.student_id.email
 
     class Meta:
         model = Assignment_Response
-        fields = ['id', 'student_id', 'name', 'submited_date']
+        fields = ['id', 'student_id', 'name', 'email','submited_date']
 
 class NotSubmittedResponseListSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField('get_student_name')
+    email = serializers.SerializerMethodField('get_student_email')
+
 
     def get_student_name(self, obj):
         return obj.student_id.name
 
+    def get_student_email(self, obj):
+        return obj.student_id.email
+
     class Meta:
         model = SubmissionStatus
-        fields = ['name']
+        fields = ['name', 'email']
+
+class GetTeacherAssignmentResponseSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField('get_student_name')
+    email = serializers.SerializerMethodField('get_student_email')
+
+    def get_student_name(self, obj):
+        return obj.student_id.name
+
+    def get_student_email(self, obj):
+        return obj.student_id.email
+
+    class Meta:
+        model = Assignment_Response
+        fields = ['name', 'email','student_id', 'submited_date', 'submission_file']
+
+class GradeAssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Grade_Assignment
+        fields = '__all__'
+
+class GetTeacherGradedResponseListSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField('get_student_name')
+    email = serializers.SerializerMethodField('get_student_email')
+    marks = serializers.SerializerMethodField('get_student_marks')
+
+    def get_student_name(self, obj):
+        return obj.student_id.name
+    
+    def get_student_email(self, obj):
+        return obj.student_id.email
+
+    def get_student_marks(self, obj):
+        marks = Grade_Assignment.objects.get(response_id=obj.id).marks_scored
+        return str(marks)
+
+
+    class Meta:
+        model = Assignment_Response
+        fields = ['id', 'student_id', 'name', 'email','marks']
+
+class GetTeacherGradedResponseSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField('get_student_name')
+    email = serializers.SerializerMethodField('get_student_email')
+    mark = serializers.SerializerMethodField('get_student_mark')
+    remark = serializers.SerializerMethodField('get_student_remark')
+
+    def get_student_name(self, obj):
+        return obj.student_id.name
+
+    def get_student_email(self, obj):
+        return obj.student_id.email
+
+    def get_student_mark(self, obj):
+        marks = Grade_Assignment.objects.get(response_id=obj.id).marks_scored
+        return str(marks)
+
+    def get_student_remark(self, obj):
+        remark = Grade_Assignment.objects.get(response_id=obj.id).remark
+        return remark
+
+
+    class Meta:
+        model = Assignment_Response
+        fields = ['student_id', 'name', 'email', 'submission_file', 'submited_date', 'mark', 'remark']

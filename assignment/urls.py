@@ -10,5 +10,9 @@ urlpatterns = [
     path('<int:assign_id>/<int:student_id>/submit', SubmitAssignmentResponseView.as_view(), name='submit-assignment-response'),
     path('<int:assign_id>/<int:student_id>/submitted', GetStudentSubmitedAssignmentView.as_view(), name='submitted-assignment'),
     path('<int:assign_id>/response-list', GetTeacherAssignmentResponseList.as_view(), name='teacher-assignment-response-list'),
+    path('<int:response_id>/response', GetTeacherAssignmentResponse.as_view(), name='teacher-assignment-response'),
+    path('grade-assignment', GradeAssignmentView.as_view(), name='grade-assignment'),
+    path('<int:assign_id>/graded-response-list', GetTeacherGradedResponseList.as_view(), name='teacher-graded-response-list'),
+    path('<int:response_id>/graded-response', GetTeacherGradedResponse.as_view(), name='teacher-graded-response'),
     
 ]
