@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, status, views, permissions
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 from oems_api.permissions import IsTeacher, IsStudent
 from klass.models import Classes, Study
@@ -144,8 +145,21 @@ class GetStudentSubmitedAssignmentView(generics.GenericAPIView):
             "Response_Details":response_serializer.data
             }, status=status.HTTP_200_OK)
 
-# class GetTeacherAssignmentResponseList(generics.GenericAPIView):
-#     permission_classes = (permissions.IsAuthenticated, IsTeacher)
+class GetTeacherAssignmentResponseList(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, IsTeacher)
 
-#     def get(self, request, assign_id):
-#         response_objs = SubmissionStatus.objects.filter(assignment_id=assign_id)
+    def get(self, request, assign_id):
+        submitted_response_objs = Assignment_Response.objects.filter(assignment_id=assign_id, idGraded=False)
+
+        submitted_serializer = GetTeacherAssignmentResponseListSerializer(instance=submitted_response_objs, many=True)
+
+        not_submitted_response = SubmissionStatus.objects.filter(assignment_id=assign_id, submission_status=False)
+
+        not_submitted_serializer = NotSubmittedResponseListSerializer(instance=not_submitted_response, many=True)
+
+        return Response({
+            'Submitted_Responses':submitted_serializer.data,
+            'Not_Submitted_Responses':not_submitted_serializer.data
+        }, status=status.HTTP_200_OK)
+
+
