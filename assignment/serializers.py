@@ -28,10 +28,20 @@ class GetAssignmentSerializer(serializers.ModelSerializer):
     def get_assignment_status(self, obj):
         return obj.assignment_status()
 
+class UpdateAssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Assignment
+        fields = ['name', 'instructions', 'total_marks', 'due_on', 'ques_file']
+
 class SubmitAssignmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assignment_Response
         fields = '__all__'
+
+class UpdateAssignmentResponse(serializers.ModelSerializer):
+    class Meta:
+        model = Assignment_Response
+        fields = ['submission_file', 'submited_date']
 
 class GetAssignmentResponseSerializer(serializers.ModelSerializer):
 
@@ -58,7 +68,7 @@ class GetAssignmentResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Assignment_Response
-        fields = ['submission_file', 'submited_date', 'submission_status','marks']
+        fields = ['id','submission_file', 'submited_date', 'submission_status','marks']
 
 
 class GetTeacherAssignmentResponseListSerializer(serializers.ModelSerializer):
@@ -109,6 +119,11 @@ class GradeAssignmentSerializer(serializers.ModelSerializer):
         model = Grade_Assignment
         fields = '__all__'
 
+class UpdateGradeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Grade_Assignment
+        fields = ['marks_scored', 'remark']
+
 class GetTeacherGradedResponseListSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField('get_student_name')
     email = serializers.SerializerMethodField('get_student_email')
@@ -134,6 +149,7 @@ class GetTeacherGradedResponseSerializer(serializers.ModelSerializer):
     email = serializers.SerializerMethodField('get_student_email')
     mark = serializers.SerializerMethodField('get_student_mark')
     remark = serializers.SerializerMethodField('get_student_remark')
+    grade_id = serializers.SerializerMethodField('get_grade_id')
 
     def get_student_name(self, obj):
         return obj.student_id.name
@@ -148,8 +164,11 @@ class GetTeacherGradedResponseSerializer(serializers.ModelSerializer):
     def get_student_remark(self, obj):
         remark = Grade_Assignment.objects.get(response_id=obj.id).remark
         return remark
+    
+    def get_grade_id(self, obj):
+        return obj.id
 
 
     class Meta:
         model = Assignment_Response
-        fields = ['student_id', 'name', 'email', 'submission_file', 'submited_date', 'mark', 'remark']
+        fields = ['student_id', 'name', 'email', 'submission_file', 'submited_date', 'grade_id', 'mark', 'remark']

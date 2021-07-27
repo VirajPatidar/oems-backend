@@ -3,6 +3,9 @@ from rest_framework import generics, status, views, permissions
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+import os
+from django.conf import settings
+from datetime import datetime
 
 from oems_api.permissions import IsTeacher, IsStudent
 from klass.models import Classes, Study
@@ -70,6 +73,28 @@ class GetTecherAssignmentView(generics.GenericAPIView):
         
         serializer = GetAssignmentSerializer(instance=assign)
 
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UpdateAssignmentView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, IsTeacher)
+
+    def put(self, request, assign_id):
+        try:
+            assign = Assignment.objects.get(id=assign_id)
+        except ObjectDoesNotExist:
+            return Response({
+                'message':'Invalid Assignment Id'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        ques_file_url=os.path.join(settings.MEDIA_ROOT, assign.ques_file.name)
+        print(ques_file_url)
+        serializer = UpdateAssignmentSerializer(assign, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        
+        if os.path.exists(ques_file_url):
+                print(True)
+                os.remove(ques_file_url)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class GetStuAssignmentListView(generics.GenericAPIView):
@@ -145,6 +170,38 @@ class GetStudentSubmitedAssignmentView(generics.GenericAPIView):
             "Response_Details":response_serializer.data
             }, status=status.HTTP_200_OK)
 
+class UpdateStudentSubmittedAssignmantView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, IsStudent)
+
+    def put(self, request, response_id):
+        try:
+            response_obj = Assignment_Response.objects.get(id=response_id)
+        except ObjectDoesNotExist:
+            return Response({
+                'message':'Invalid Response Id'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if response_obj.isGraded==False:
+            response_obj.submited_date = datetime.now(response_obj.submited_date.tzinfo)
+            response_obj.save()
+            submission_file_url=os.path.join(settings.MEDIA_ROOT, response_obj.submission_file.name)
+            serializer = UpdateAssignmentResponse(response_obj, data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+
+            if os.path.exists(submission_file_url):
+                print(True)
+                os.remove(submission_file_url)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'message': 'You submission is graded so you can not update submission file'
+            }, status=status.HTTP_304_NOT_MODIFIED)
+
+        
+
+
+
 class GetTeacherAssignmentResponseList(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, IsTeacher)
 
@@ -199,6 +256,34 @@ class GradeAssignmentView(generics.GenericAPIView):
         sub_status_obj.save()
 
         return Response(grade_data, status=status.HTTP_201_CREATED)
+
+class UpdateAssignmentGradeView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, IsTeacher)
+
+    def put(self, request, grade_id):
+        try:
+            grade_obj = Grade_Assignment.objects.get(id=grade_id)
+        except ObjectDoesNotExist:
+            return Response({
+                'message':'Invalid Grade Id'
+            }, status=status.HTTP_400_BAD_REQUEST) 
+
+        serializer = UpdateGradeSerializer(grade_obj, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+
+        grade_data = serializer.data
+        
+        stu_id = grade_obj.response_id.student_id
+        assign_id = grade_obj.response_id.assignment_id
+
+        sub_status_obj = SubmissionStatus.objects.get(student_id=stu_id, assignment_id=assign_id)
+        sub_status_obj.marks_scored = request.data.get('marks_scored')
+        sub_status_obj.save()
+
+        return Response(grade_data, status=status.HTTP_200_OK)
+
+
 
 class GetTeacherGradedResponseList(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, IsTeacher)
