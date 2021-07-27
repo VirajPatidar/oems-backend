@@ -37,6 +37,12 @@ from .serializers import (
 
 from klass.models import Study, Classes
 
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+class CustomRedirect(HttpResponsePermanentRedirect):
+    allowed_shemes = [config('APP_SCHEME'), 'http', 'https']
+
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class RegisterView(generics.GenericAPIView):
 
@@ -49,7 +55,7 @@ class RegisterView(generics.GenericAPIView):
         serializer.save()
         user_data = serializer.data
         user = User.objects.get(email=user_data['email'])
-        token = RefreshToken.for_user(user).access_token
+        token = RefreshToken.for_user(user)
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
         absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
@@ -70,6 +76,7 @@ class VerifyEmail(views.APIView):
 
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
+        redirect_url = "https://www.google.com/"  #this will be frontend url
         token = request.GET.get('token')
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
@@ -77,11 +84,14 @@ class VerifyEmail(views.APIView):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            # return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+            return CustomRedirect(redirect_url+'?Success=True&message=Email activated')
         except jwt.ExpiredSignatureError as identifier:
-            return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
+            # return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
+            return CustomRedirect(redirect_url+'?Success=False&message=Activation Expired')
         except jwt.exceptions.DecodeError as identifier:
-            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+            # return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+            return CustomRedirect(redirect_url+'?Success=False&message=Invalid token')
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -172,11 +182,7 @@ class ChangePasswordView(generics.UpdateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class CustomRedirect(HttpResponsePermanentRedirect):
-    allowed_shemes = [config('APP_SCHEME'), 'http', 'https']
 
-
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class RequestPasswordResetEmail(generics.GenericAPIView):
     serializer_class = ResetPasswordEmailRequestSerializer
