@@ -228,7 +228,7 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
 
             #return Response({'success':True, 'message':'Credentials Valid', 'uidb64':uidb64, 'token':token}, status=status.HTTP_200_OK)
             if redirect_url and len(redirect_url) > 3:
-                return CustomRedirect(redirect_url+'?token_valid=True&message=Credentials Valid&uidb64='+uidb64+'&token='+token)
+                return CustomRedirect(redirect_url+'%3ftoken_valid%3dTrue%26message%3dCredentials_Valid/'+uidb64+'/'+token)
             else:
                 return CustomRedirect(redirect_url+'?token_valid=False')
             
