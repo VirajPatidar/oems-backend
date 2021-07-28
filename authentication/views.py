@@ -76,7 +76,7 @@ class VerifyEmail(views.APIView):
 
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
-        redirect_url = "https://www.google.com/"  #this will be frontend url
+        redirect_url = "http://localhost:3000/login"  #Change Base URL before deployment
         token = request.GET.get('token')
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
@@ -201,7 +201,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             relativeLink = reverse(
                 'password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token})
 
-            redirect_url = "https://www.google.com/"  #this will be frontend url           
+            redirect_url = "http://localhost:3000/reset-password"  #Change Base URL before deployment          
             absurl = 'http://'+current_site + relativeLink
             email_body = 'Hello, \n Use link below to reset your password  \n' + absurl+"?redirect_url="+redirect_url 
             data = {'email_body': email_body, 'to_email': user.email,                     
