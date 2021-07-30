@@ -12,8 +12,8 @@ from .views import (
 )
 
 urlpatterns = [
-    path('make-quiz/', MakeQuizView.as_view(), name="make-quiz"),
-    path('make-question/', CreateQuestionView.as_view(), name="make-question"),
+    path('make-quiz', MakeQuizView.as_view(), name="make-quiz"),
+    path('make-question', CreateQuestionView.as_view(), name="make-question"),
     path('<int:class_id>', GetTeachQuizView.as_view(), name="teach-quiz"),
     path('<int:class_id>/<int:student_id>', GetStuQuizView.as_view(), name="stu-quiz"),
     path('question/<int:quiz_id>', GetTeachQuestionView.as_view(), name="teach-question"),

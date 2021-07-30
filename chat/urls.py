@@ -4,6 +4,6 @@ from .views import (
     GetMessageView
 )
 urlpatterns = [
-    path('message/', HandleMessageView.as_view(), name="chatmessage"),
+    path('message', HandleMessageView.as_view(), name="chatmessage"),
     path('message/<class_id>', GetMessageView.as_view(), name="getchatmessages"),
 ]
