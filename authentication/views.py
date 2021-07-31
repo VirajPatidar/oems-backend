@@ -290,6 +290,7 @@ class UpdateAvatarView(generics.UpdateAPIView):
             response = {
                 'status': 'success',
                 'message': 'Profile Picture updated successfully',
+                'profile_picture': self.request.user.avatar.url,
             }
 
             return Response(response, status=status.HTTP_200_OK)
