@@ -138,7 +138,7 @@ class LoginAPIView(generics.GenericAPIView):
                     'teacher_name':class_obj.teacher_id.user.name
                 }
                 class_response.append(dict1)
-            return Response({'user_data': user_data, 'class_details': class_response, 'user id':user_id, 'student email':student_email, 'student name':student_name, 'user_type':user_type, 'student id': student_id, 'profile picture': profile_picture}, status=status.HTTP_200_OK)
+            return Response({'user_data': user_data, 'user_id':user_id, 'student_email':student_email, 'student_name':student_name, 'user_type':user_type, 'student_id': student_id, 'profile_picture': profile_picture}, status=status.HTTP_200_OK)
         else:
             tea = Teacher.objects.get(email=user.email)
             teacher_email = email
@@ -153,7 +153,7 @@ class LoginAPIView(generics.GenericAPIView):
                     'class_name': i.name,
                 }
                 class_response.append(dict1)
-            return Response({'user_data': user_data, 'class_details': class_response, 'user id':user_id, 'teacher email':teacher_email, 'teacher name':teacher_name, 'user_type':user_type, 'teacher id': teacher_id, 'profile picture': profile_picture}, status=status.HTTP_200_OK)
+            return Response({'user_data': user_data, 'user_id':user_id, 'teacher_email':teacher_email, 'teacher_name':teacher_name, 'user_type':user_type, 'teacher_id': teacher_id, 'profile_picture': profile_picture}, status=status.HTTP_200_OK)
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
