@@ -280,7 +280,7 @@ class UpdateAvatarView(generics.UpdateAPIView):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            profile_url=os.path.join(settings.BASE_DIR, self.object.avatar.url)
+            profile_url=os.path.join(settings.MEDIA_ROOT, self.object.avatar.name)
             self.object.avatar = request.data.get('avatar')
             self.object.save()
             
