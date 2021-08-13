@@ -12,6 +12,7 @@ from .serializers import (
 )
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import date
+from django.db.models import F
 
 # Create your views here.
 
@@ -142,3 +143,35 @@ class ClassMembersListView(generics.GenericAPIView):
         student_serializer = StudentListSerializer(instance=stu, many=True)
 
         return Response({'teacher' : teacher_serializer.data, 'students': student_serializer.data}, status=status.HTTP_200_OK)
+
+
+class ClassListView(generics.GenericAPIView):
+    
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, id):
+
+        if request.user.user_type == "student":
+            student_id = Student.objects.get(pk=id)
+            class_details = Study.objects.select_related('class_id').values('class_id', 'student_id', class_name=F('class_id__name')).filter(student_id=student_id)
+            class_response=[]
+            for i in class_details:
+                class_obj=Classes.objects.get(pk=i['class_id'])
+                dict1={
+                    'class_id': i['class_id'],
+                    'class_name': i['class_name'],
+                    'teacher_name':class_obj.teacher_id.user.name
+                }
+                class_response.append(dict1)
+            return Response({'classes': class_response}, status=status.HTTP_200_OK)
+        else:
+            teacher_id = Teacher.objects.get(pk=id)
+            class_details = Classes.objects.filter(teacher_id=teacher_id)
+            class_response=[]
+            for i in class_details:
+                dict1={
+                    'class_id': i.pk,
+                    'class_name': i.name,
+                }
+                class_response.append(dict1)
+            return Response({'classes': class_response}, status=status.HTTP_200_OK)
