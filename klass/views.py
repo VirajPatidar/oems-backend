@@ -36,8 +36,8 @@ class HandleClassView(generics.GenericAPIView):
             c = Classes.objects.get(pk = class_id)
             c.delete()
         except ObjectDoesNotExist:
-            return Response({'response':'Invalid class ID'})
-        return Response({'response':'class deleted'})
+            return Response({'response':'Invalid class ID'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'response':'class deleted'}, status=status.HTTP_200_OK)
 
 
 
@@ -53,7 +53,7 @@ class ClassMembershipView(generics.GenericAPIView):
         c = Classes.objects.filter(joining_code = joining_code)
         
         if not c:
-            return Response({'response':'Invalid joining code'})
+            return Response({'response':'Invalid joining code'}, status=status.HTTP_400_BAD_REQUEST)
             
         timestamp = c[0].joining_code_expiry_date
         current = date.today()
@@ -62,7 +62,7 @@ class ClassMembershipView(generics.GenericAPIView):
         print(current)
 
         if timestamp < current :
-            return Response({'response':'Joining code has expired'})
+            return Response({'response':'Joining code has expired'}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.serializer_class(data={'class_id': c[0].pk, 'student_id': student_id})
 
@@ -79,8 +79,8 @@ class ClassMembershipView(generics.GenericAPIView):
             s = Study.objects.get(class_id = class_id, student_id = student_id)
             s.delete()
         except ObjectDoesNotExist:
-            return Response({'response':'Invalid request data'})
-        return Response({'response':'Student left the class'})
+            return Response({'response':'Invalid request data'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'response':'Student left the class'}, status=status.HTTP_200_OK)
 
 
 
@@ -96,7 +96,7 @@ class AddRemoveStudentView(generics.GenericAPIView):
         stu = Student.objects.filter(email = email)
         
         if not stu:
-            return Response({'response':'Invalid student email'})
+            return Response({'response':'Invalid student email'}, status=status.HTTP_400_BAD_REQUEST)
             
         student_id = stu[0].pk
 
@@ -115,8 +115,8 @@ class AddRemoveStudentView(generics.GenericAPIView):
             s = Study.objects.get(class_id = class_id, student_id = student_id)
             s.delete()
         except ObjectDoesNotExist:
-            return Response({'response':'Invalid request data'})
-        return Response({'response':'Student removed'})
+            return Response({'response':'Invalid request data'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'response':'Student removed'}, status=status.HTTP_200_OK)
 
 
 
@@ -129,7 +129,7 @@ class ClassMembersListView(generics.GenericAPIView):
         try:
             teach_id = Classes.objects.values('teacher_id',).get(pk = class_id)
         except ObjectDoesNotExist:
-            return Response({'response':'Invalid request data'})
+            return Response({'response':'Invalid request data'}, status=status.HTTP_400_BAD_REQUEST)
             
         # print(teach_id.get('teacher_id')) 
         teach = Teacher.objects.filter(pk = teach_id.get('teacher_id'))
@@ -141,4 +141,4 @@ class ClassMembersListView(generics.GenericAPIView):
         stu = Student.objects.filter(id__in = stu_ids)
         student_serializer = StudentListSerializer(instance=stu, many=True)
 
-        return Response({'teacher' : teacher_serializer.data, 'students': student_serializer.data})
+        return Response({'teacher' : teacher_serializer.data, 'students': student_serializer.data}, status=status.HTTP_200_OK)
