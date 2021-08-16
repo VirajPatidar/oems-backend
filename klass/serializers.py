@@ -27,12 +27,24 @@ class ClassMemberSerializer(serializers.ModelSerializer):
 
 class StudentListSerializer(serializers.ModelSerializer):
 
+    profile_picture = serializers.SerializerMethodField()
+
     class Meta:
         model = Student
         fields = '__all__'
 
+    def get_profile_picture(self, obj):
+        return obj.user.avatar.url
+
+
+
 class TeacherSerializer(serializers.ModelSerializer):
+
+    profile_picture = serializers.SerializerMethodField()
 
     class Meta:
         model = Teacher
         fields = '__all__'
+
+    def get_profile_picture(self, obj):
+        return obj.user.avatar.url
