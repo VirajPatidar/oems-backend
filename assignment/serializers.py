@@ -61,14 +61,14 @@ class GetAssignmentResponseSerializer(serializers.ModelSerializer):
 
 
     def get_submission_status(self, obj):
-        if obj.assignment_id.due_on > datetime.now(obj.assignment_id.due_on.tzinfo):
+        if obj.assignment_id.due_on > obj.submited_date:
             return 'Assignment Submitted Before Due'
         else:
             return 'Assignment Submitted Late'
 
     class Meta:
         model = Assignment_Response
-        fields = ['id','submission_file', 'submited_date', 'submission_status','marks']
+        fields = ['id','submission_file', 'isGraded', 'submited_date', 'submission_status','marks']
 
 
 class GetTeacherAssignmentResponseListSerializer(serializers.ModelSerializer):
