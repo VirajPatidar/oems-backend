@@ -47,6 +47,7 @@ class GetAssignmentResponseSerializer(serializers.ModelSerializer):
 
     submission_status = serializers.SerializerMethodField('get_submission_status')
     marks = serializers.SerializerMethodField('get_marks')
+    remark = serializers.SerializerMethodField('get_remark')
 
     def get_marks(self, obj):
         if obj.isGraded==True:
@@ -59,6 +60,12 @@ class GetAssignmentResponseSerializer(serializers.ModelSerializer):
         else:
             return "Your Assignment is not yet Graded"
 
+    def get_remark(self, obj):
+        if obj.isGraded==True:
+            remark = Grade_Assignment.objects.get(response_id=obj.id).remark
+            return remark
+        else:
+            return "Your Assignment is not yet Graded"
 
     def get_submission_status(self, obj):
         if obj.assignment_id.due_on > obj.submited_date:
@@ -68,7 +75,7 @@ class GetAssignmentResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Assignment_Response
-        fields = ['id','submission_file', 'isGraded', 'submited_date', 'submission_status','marks']
+        fields = ['id','submission_file', 'isGraded', 'submited_date', 'submission_status','marks', 'remark']
 
 
 class GetTeacherAssignmentResponseListSerializer(serializers.ModelSerializer):
