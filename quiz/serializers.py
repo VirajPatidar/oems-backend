@@ -71,16 +71,20 @@ class SubmissionStatusSerializer(serializers.ModelSerializer):
 
     name=serializers.SerializerMethodField()
     email=serializers.SerializerMethodField()
+    profile_picture = serializers.SerializerMethodField()
     
     class Meta:
         model = SubmissionStatus
-        fields = ['id', 'name', 'email', 'submission_status', 'marks_scored']
+        fields = ['id', 'name', 'email', 'submission_status', 'marks_scored', 'profile_picture']
 
     def get_name(self, obj):
         return obj.student_id.name
 
     def get_email(self, obj):
         return obj.student_id.email
+
+    def get_profile_picture(self, obj):
+        return obj.student_id.user.avatar.url
 
 
 
