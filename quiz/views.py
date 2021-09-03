@@ -165,19 +165,19 @@ class SubmitQuizResponseView(generics.GenericAPIView):
     def post(self, request, quiz_id, student_id):
 
         for i in request.data:
-            question = Question.objects.get(pk = i.get('question_id'))
+            question = Question.objects.get(pk = int(i.get('question_id')))
             serializer = QuizResponseSerializer(data={'quiz_id': quiz_id, 
                                                 'student_id': student_id, 
-                                                'question_id': i.get('question_id'), 
+                                                'question_id': int(i.get('question_id')), 
                                                 'question': question.question,
                                                 'marks': question.marks,
-                                                'marks_scored': question.marks if question.correct_option_number == i.get('marked_option_number') else 0,
+                                                'marks_scored': question.marks if question.correct_option_number == int(i.get('marked_option_number')) else 0,
                                                 'option1': question.option1,
                                                 'option2': question.option2,
                                                 'option3': question.option3,
                                                 'option4': question.option4,
                                                 'correct_option_number': question.correct_option_number,
-                                                'marked_option_number': i.get('marked_option_number')
+                                                'marked_option_number': int(i.get('marked_option_number'))
                                                 })
 
             if serializer.is_valid(raise_exception=True):
