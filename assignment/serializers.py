@@ -180,7 +180,8 @@ class GetTeacherGradedResponseSerializer(serializers.ModelSerializer):
         return remark
     
     def get_grade_id(self, obj):
-        return obj.id
+        id=Grade_Assignment.objects.get(response_id=obj.id).id
+        return id
 
 
     class Meta:
