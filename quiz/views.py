@@ -141,10 +141,10 @@ class GetStuQuestionView(generics.GenericAPIView):
                 submit_status = SubmissionStatus.objects.get(quiz_id=quiz_id, student_id=student_id)
                 quiz_response = QuizResponse.objects.filter(quiz_id=quiz_id, student_id=student_id)
                 resp = QuizResponseSerializer(instance=quiz_response, many=True)
-                return Response({'name':quiz.name, 'number_of_questions':quiz.number_of_questions, 'marks_scored': submit_status.marks_scored, 'total_marks':quiz.marks, 'response': resp.data})
+                return Response({'name':quiz.name, 'number_of_questions':quiz.number_of_questions, 'marks_scored': submit_status.marks_scored, 'total_marks':quiz.marks, 'quiz_response': resp.data})
 
             else :
-                return Response({'response':'Result has not been released yet. Please contact your teacher'})
+                return Response({'name':quiz.name, 'response':'Result has not been released yet. Please contact your teacher'})
 
         else :
             if quiz_status == "Active" :
@@ -152,10 +152,10 @@ class GetStuQuestionView(generics.GenericAPIView):
                 return Response(quiz.data)
 
             elif quiz_status == "Overdue" :
-                return Response({'response':'This quiz is no longer accepting responses. Please contact your teacher'})
+                return Response({'name':quiz.name, 'response':'This quiz is no longer accepting responses. Please contact your teacher'})
 
             else :
-                return Response({'response':'Quiz will start on ' + str(quiz.start_time)[0:10] +' '+ str(quiz.start_time)[11:16]})
+                return Response({'name':quiz.name, 'start_time': quiz.start_time, 'response':'Quiz will start on ' + str(quiz.start_time)[0:10] +' '+ str(quiz.start_time)[11:16]})
 
 
 class SubmitQuizResponseView(generics.GenericAPIView):
