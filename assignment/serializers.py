@@ -110,6 +110,7 @@ class NotSubmittedResponseListSerializer(serializers.ModelSerializer):
 class GetTeacherAssignmentResponseSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField('get_student_name')
     email = serializers.SerializerMethodField('get_student_email')
+    submission_status = serializers.SerializerMethodField('get_submission_status')
 
     def get_student_name(self, obj):
         return obj.student_id.name
@@ -117,9 +118,15 @@ class GetTeacherAssignmentResponseSerializer(serializers.ModelSerializer):
     def get_student_email(self, obj):
         return obj.student_id.email
 
+    def get_submission_status(self, obj):
+        if obj.assignment_id.due_on > obj.submited_date:
+            return 'Assignment Submitted Before Due'
+        else:
+            return 'Assignment Submitted Late'
+
     class Meta:
         model = Assignment_Response
-        fields = ['name', 'email','student_id', 'submited_date', 'submission_file']
+        fields = ['name', 'email','student_id', 'submited_date', 'submission_file', 'submission_status']
 
 class GradeAssignmentSerializer(serializers.ModelSerializer):
     class Meta:
