@@ -78,7 +78,7 @@ class GetTecherAssignmentView(generics.GenericAPIView):
 class UpdateAssignmentView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, IsTeacher)
 
-    def put(self, request, assign_id):
+    def patch(self, request, assign_id):
         try:
             assign = Assignment.objects.get(id=assign_id)
         except ObjectDoesNotExist:
@@ -92,7 +92,7 @@ class UpdateAssignmentView(generics.GenericAPIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
         
-        if os.path.exists(ques_file_url):
+        if os.path.exists(ques_file_url) and request.data.get('ques_file'):
                 print(True)
                 os.remove(ques_file_url)
         return Response(serializer.data, status=status.HTTP_200_OK)
