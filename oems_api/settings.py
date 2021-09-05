@@ -66,7 +66,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
+    'https://oems.netlify.app',
 ]
 
 ROOT_URLCONF = 'oems_api.urls'
