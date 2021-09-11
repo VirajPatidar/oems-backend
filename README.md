@@ -48,3 +48,59 @@ Our easy-to-use and secure tools helps educators manage, measure, and enrich lea
 | `GET` | `/class/class-list/{class_id}` | To get list of class members |
 | `GET` | `/class/{id}` | To get a list of joined or created classes |
 
+<br/>
+
+**Assignment**
+| Method | URL | Description |
+| :---         | :---         | :--- 
+|`POST`| `/assignment/create-assignment`| Used by teacher to create assignment
+|`GET`| `/assignment/{class_id}/list`| Used by teacher to get all created assignments
+|`GET`| `/assignment/{assign_id}/teacher`| Used by teacher to get assignment details of specific assignment
+|`PUT`| `/assignment /{assign_id} /update-assignment`| Used by teacher to update assignment details
+|`GET`| `/assignment/{stu_id}/{class_id}/list`| Used by student to get all pending and assigned assignment list
+|`GET`| `/assignment/{assign_id}/student/pending`| Used by student to get details of specific pending assignment
+|`POST`| `/assignment/{assign_id}/{student_id}/submit`| Used by student to submit assigned assignment
+|`GET`| `/assignment /{assign_id} /{student_id} /submitted`| Used by student to get details of specific submitted assignment 
+|`PUT`| `/assignment/{response_id}/update-response`| Used by student to update response of submitted assignment
+|`GET`| `/assignment /{assign_id} /response-list`| Used by teacher to get all submitted but not graded reponses list
+|`GET`| `/assignment /{response_id} /response`| Used by teacher to get details of specific response submitted by student
+|`POST`| `/assignment/grade-assignment`| Used by teacher to grade student response
+|`GET`| `/assignment/{assign_id}/graded-response-list`| Used by teacher to get all graded responses list of specific assignment
+|`GET`| `/assignment/{response_id}/graded-response`| Used by teacher to get details of grade given to student for specific assignment response
+|`PUT`| `/assignment/{grade_id}/update-grade`| Used by teacher to update grade given to student for specific assignment response
+
+<br/>
+
+**Quiz**
+| Method | URL | Description |
+| :---         | :---         | :--- 
+| `POST` | `/quiz/make-quiz` | Used by teacher to create quiz |
+| `POST` | `/quiz/make-question` | Used by teacher to make questions for specific quiz |
+| `GET` | `/quiz/{class_id}` | Used by teacher to get list of created quizzes |
+| `GET` | `/quiz/{class_id}/{student_id}` | Used by Student to get list of pending and submitted quizzes list |
+| `GET` | `/quiz /question /{quiz_id}` | Used by teacher to get questions of specific quiz |
+| `GET` | `/quiz/question/{quiz_id}/{student_id}` | Used by student to get questions or status of specific quiz |
+| `POST` | `/quiz /response /{quiz_id} /{student_id}` | Used by student to submit quiz response |
+| `POST` | `/quiz /result /{quiz_id}` | Used by teacher to release marks & responses of specific quiz |
+| `GET` | `/quiz/statistics/{class_id}/{quiz_id}` | Used to get statistics for specific quiz |
+
+<br/>
+
+**Chat:**
+| Method | URL | Description |
+| :---         | :---         | :--- 
+| `POST` | `/chat/message` | To POST messages in class` group chat |
+| `GET` | `/chat/message/{class_id}` | To GET all messages of class` group chat |
+
+<br/>
+
+**Shared Folder:**
+| Method | URL | Description |
+| :---         | :---         | :--- 
+| `POST` | `/sharedfolder/uploadfile` | To upload a file in shared folder |
+| `GET` | `/sharedfolder /{class_id}` | To get all shared folder files of a class |
+| `DELETE` | `/sharedfolder/delete-shared-file/{file_id}` | To delete file in shared folder (only if owned)  |
+
+  
+<br/>
+<br/>
