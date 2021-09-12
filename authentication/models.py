@@ -4,7 +4,7 @@ from django.contrib.auth.models import (
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-
+from cloudinary_storage.storage import MediaCloudinaryStorage
 
 
 class UserManager(BaseUserManager):
@@ -64,7 +64,7 @@ def upload(instance, filename):
 class User(AbstractBaseUser):
     name = models.CharField(max_length=50, blank=True)
     email = models.EmailField(max_length=255, unique=True)
-    avatar = models.ImageField(default="avatar.png", upload_to=upload)
+    avatar = models.ImageField(default="avatar.png", upload_to=upload, storage=MediaCloudinaryStorage())
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
