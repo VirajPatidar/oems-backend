@@ -9,7 +9,7 @@ Our easy-to-use and secure tools helps educators manage, measure, and enrich lea
 
 **Link to the website:** [https://oems.netlify.app/](https://oems.netlify.app/)
 <br/>
-**Link to frontend repo:** [https://github.com/VirajPatidar/oems-backend](https://github.com/VirajPatidar/oems-frontend)
+**Link to frontend repo:** [https://github.com/VirajPatidar/oems-frontend](https://github.com/VirajPatidar/oems-frontend)
 
 
 ### Tech Stack ###
